@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String
+  admin_yonkes Admin_yonke[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  active    Boolean  @default(true)
+}
+
+model Admin_yonke {
+  id       Int @id @default(autoincrement())
+  admin_id Int
+  yonke_id Int
+  admin Admin @relation(fields: [admin_id], references: [id], onDelete: Cascade)
+  yonke Yonke @relation(fields: [yonke_id], references: [id], onDelete: Cascade)
+}
+
+model Yonke {
+  id        Int      @id @default(autoincrement())
+  name      String
+  location  String
+  city      String
+  latitude  String
+  longitude String
+  admin_yonkes Admin_yonke[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  active    Boolean  @default(true)
+}
