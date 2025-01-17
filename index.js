@@ -247,12 +247,14 @@ app.get("yonkes/by-admin/:admin_id", async (req, res) => {
 
 app.post("/question", async (req, res) => {
   const dataBase = new PrismaClient();
-  const {city, name, phoneNumber, pieceName, carBrand, carModelYear, carEngine} = req.body;
-  console.log(city);
+  const {cities, name, phoneNumber, pieceName, carBrand, carModelYear, carEngine} = req.body;
+  console.log("------------------------", cities , "------------------------");
   let admins = []
   const yonkes = await dataBase.yonke.findMany({
     where: {
-      city: city
+      city: {
+        in: cities
+      }
     },
     include: {
       admin_yonkes: {
@@ -289,7 +291,7 @@ app.post("/question", async (req, res) => {
       
     - 🧑‍💼 *Cliente*: ${name}  
     - 📞 *Teléfono*: ${phoneNumber}  
-    - 🏙️ *Ciudad*: ${city}  
+    - 🏙️ *Ciudad*: ${cities}  
     
     📄 *Detalles de la solicitud*:  
     - 🔧 *Pieza requerida*: ${pieceName}  
