@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
-import { sendMesssage } from "./nose/whatsappService.js";
+import { sendMesssage } from "./services/whatsappService.js";
 
 dotenv.config();
 
