@@ -4,9 +4,10 @@ import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 import { sendMesssage } from "./services/whatsappService.js";
-
+import { getUsers, login, register } from "./src/auth.js";
+import { getUserQuestions } from "./src/questions.js";
 dotenv.config();
-
+const dataBase = new PrismaClient();
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
@@ -15,103 +16,7 @@ app.get("/", (req, res) => {
   res.send("SI SIRVEEEEE");
 });
 
-/////ADMIN/////
-
-app.get("/admins", async (req, res) => {
-  const dataBase = new PrismaClient();
-  const admins = await dataBase.admin.findMany();
-
-  res.json(admins);
-});
-
-//FIND ADMIN BY ID
-
-app.get("/admins/:id", async (req, res) => {
-  const dataBase = new PrismaClient();
-  const { id } = req.params;
-
-  const admin = await dataBase.admin.findUnique({
-    where: {
-      id: Number(id),
-    },
-  });
-
-  res.json(admin);
-});
-
-//CREATE NEW ADMIN
-app.post("/admins", async (req, res) => {
-  const dataBase = new PrismaClient(); // instancia de la clase PrismaClient
-  const admins = req.body; // Suponemos que el cuerpo contiene un array de objetos admins
-
-  try {
-    const newAdmins = await dataBase.admin.createMany({
-      data: admins, // `data` debe ser un array de objetos con la estructura de cada admin
-    });
-
-    res.status(201).json({
-      message: "Admins creados exitosamente",
-      count: newAdmins.count, // `count` muestra cuántos registros se crearon
-    });
-  } catch (error) {
-    console.error("Error creando admins:", error);
-    res.status(500).json({
-      message: "Error al crear admins",
-      error: error.message,
-    });
-  }
-});
-
-// app.post("/admins", async (req, res) => {
-//   const dataBase = new PrismaClient(); //intancia de la clase PrismaClient
-//   const bodyAdmin = req.body;
-
-//   const newAdmin = await dataBase.admin.create({
-//     data: {
-//       name: bodyAdmin.name,
-//       phone: bodyAdmin.phone,
-//     },
-//   });
-
-//   res.json(newAdmin);
-// });
-
-//UPDATE ADMIN
-
-app.put("/admins/:id", async (req, res) => {
-  const dataBase = new PrismaClient();
-  const body = req.body;
-  const { id } = req.params;
-
-  const editedAdmin = await dataBase.admin.update({
-    where: {
-      id: Number(id),
-    },
-    data: {
-      name: body.name,
-      phone: body.phone,
-    },
-  });
-
-  res.json(editedAdmin);
-});
-
-//DELETE ADMIN
-
-app.delete("/admins/:id", async (req, res) => {
-  const dataBase = new PrismaClient();
-  const { id } = req.params;
-
-  const deletedAdmin = await dataBase.admin.delete({
-    where: {
-      id: Number(id),
-    },
-  });
-  res.json(deletedAdmin);
-});
-
 /////YONKE/////
-
 app.get("/yonkes", async (req, res) => {
   const dataBase = new PrismaClient();
   const yonkes = await dataBase.yonke.findMany();
@@ -120,7 +25,6 @@ app.get("/yonkes", async (req, res) => {
 });
 
 //FIND yonke BY ID
-
 app.get("/yonkes/:id", async (req, res) => {
   const dataBase = new PrismaClient();
   const { id } = req.params;
@@ -135,7 +39,6 @@ app.get("/yonkes/:id", async (req, res) => {
 });
 
 //CREATE NEW YONKE
-
 app.post("/yonkes", async (req, res) => {
   const dataBase = new PrismaClient(); //intancia de la clase PrismaClient
   const body = req.body;
@@ -153,6 +56,15 @@ app.post("/yonkes", async (req, res) => {
     },
   });
 
+  await dataBase.user.update({
+    where: {
+      id: body.admin_id,
+    },
+    data: {
+      role: ["ADMIN"],
+    },
+  });
+
   await dataBase.admin_yonke.create({
     data: {
       admin_id: body.admin_id,
@@ -163,7 +75,6 @@ app.post("/yonkes", async (req, res) => {
 });
 
 //UPDATE YONKE
-
 app.put("/yonkes/:id", async (req, res) => {
   const dataBase = new PrismaClient();
   const body = req.body;
@@ -186,7 +97,6 @@ app.put("/yonkes/:id", async (req, res) => {
 });
 
 //DELETE YONKE
-
 app.delete("/yonkes/:id", async (req, res) => {
   const dataBase = new PrismaClient();
   const { id } = req.params;
@@ -200,7 +110,6 @@ app.delete("/yonkes/:id", async (req, res) => {
 });
 
 //ALL ADMINS BY YONKE_ID
-
 app.get("/admins/by-yonke/:yonke_id", async (req, res) => {
   const dataBase = new PrismaClient();
   const { yonke_id } = req.params;
@@ -223,7 +132,6 @@ app.get("/admins/by-yonke/:yonke_id", async (req, res) => {
 });
 
 //ALL YONKES BY ADMIN ID
-
 app.get("yonkes/by-admin/:admin_id", async (req, res) => {
   const dataBase = new PrismaClient();
   const { admin_id } = req.params;
@@ -243,48 +151,70 @@ app.get("yonkes/by-admin/:admin_id", async (req, res) => {
   }
   res.json(yonkes.map((entry) => entry.yonke));
 });
-
-
+//
 app.post("/question", async (req, res) => {
-  const dataBase = new PrismaClient();
-  const {cities, name, phoneNumber, pieceName, carBrand, carModelYear, carEngine} = req.body;
-  console.log("------------------------", cities , "------------------------");
-  let admins = []
-  const yonkes = await dataBase.yonke.findMany({
-    where: {
-      city: {
-        in: cities
-      }
-    },
-    include: {
-      admin_yonkes: {
-        include: {admin: true}
-      }
-    }
-  })
+  try {
+    const {
+      cities,
+      name,
+      phoneNumber,
+      pieceName,
+      carBrand,
+      carModelYear,
+      carEngine,
+    } = req.body;
 
-  const response = yonkes.map((yonke)=>{
-    const yonkemap = {
-      name: yonke.name,
-      location: yonke.location,
-      city: yonke.city,
-      latitude: yonke.latitude,
-      longitude: yonke.longitude,
-      admins: yonke.admin_yonkes.map((admin)=>{
-        const adminmap = {
-          name: admin.admin.name,
-          phone: admin.admin.phone
-        }
-        admins.push(adminmap)
-        return adminmap;
-      })
-    }
-    console.log(admins);
-    return yonkemap;
-  })
+    console.log("------------------------", cities, "------------------------");
 
-  await admins.map(async(admin)=>{
-    const message = `
+    let admins = [];
+    const yonkes = await dataBase.yonke.findMany({
+      where: { city: { in: cities } },
+      include: {
+        admin_yonkes: {
+          include: { admin: true },
+        },
+      },
+    });
+
+    const response = yonkes.map((yonke) => {
+      const yonkemap = {
+        name: yonke.name,
+        location: yonke.location,
+        city: yonke.city,
+        latitude: yonke.latitude,
+        longitude: yonke.longitude,
+        admins: yonke.admin_yonkes.map((admin) => {
+          const adminmap = { name: admin.admin.name, phone: admin.admin.phone };
+          admins.push(adminmap);
+          return adminmap;
+        }),
+      };
+      return yonkemap;
+    });
+
+    const user = await dataBase.user.findUnique({
+      where: { phone: phoneNumber },
+    });
+
+    if (user) {
+      console.log("User already exists");
+      const question = await dataBase.question.create({
+        data: {
+          name,
+          pieceName,
+          cities,
+          carBrand,
+          phoneNumber,
+          carModelYear,
+          carEngine,
+          User: { connect: { id: user.id } },
+        },
+      });
+      console.log({ question });
+    }
+
+    for (const admin of admins) {
+      const message = `
     👋 Hola ${admin.name}, 
     
     📌 *Nueva solicitud recibida*:
@@ -301,29 +231,42 @@ app.post("/question", async (req, res) => {
     
     Por favor, responde a esta solicitud lo antes posible. ¡Gracias! 🙌
     `;
+      console.log({ message });
+      // await sendMessage(admin.phone, message);
+    }
 
-  console.log(message);
-  //  await sendMesssage(admin.phone, message);
-  })
+    res.json(response);
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Ocurrió un error en el servidor" });
+  } finally {
+    await dataBase.$disconnect(); // Cerrar conexión correctamente
+  }
+});
 
+app.get("/questions", async (req, res) => getUserQuestions(req, res));
 
-  res.json(response);
-
-})
-
+//
 app.post("/relation", async (req, res) => {
   const dataBase = new PrismaClient();
-  const {admin_id, yonke_id} = req.body;
+  const { admin_id, yonke_id } = req.body;
 
   const response = await dataBase.admin_yonke.create({
     data: {
       admin_id: admin_id,
-      yonke_id: yonke_id
-    }
-  })
+      yonke_id: yonke_id,
+    },
+  });
   res.json(response);
-})
+});
 
+app.post("/login", async (req, res) => login(req, res));
+
+app.post("/register", async (req, res) => register(req, res));
+
+app.get("/users", async (req, res) => getUsers(req, res));
+
+//
 app.listen(3000, () => {
   console.log("Server is listening on port 3000");
 });

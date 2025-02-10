@@ -7,33 +7,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Admin {
-  id        Int      @id @default(autoincrement())
-  name      String
-  phone     String
+model User {
+  id                  String   @id @default(uuid())
+  name                String
+  phone               String   @unique
+  email               String   @unique
+  password            String
+  role                String[] @default(["USER"])
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  active              Boolean  @default(true)
+  recoverPasswordCode String?
+  questions           Question[]
   admin_yonkes Admin_yonke[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  active    Boolean  @default(true)
+}
+
+model Question {
+  id           Int      @id @default(autoincrement())
+  cities       String[]
+  name         String @default("Anónimo")
+  phoneNumber  String
+  pieceName    String
+  carBrand     String
+  carModelYear String
+  carEngine    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  active       Boolean  @default(true)
+  userId       String
+
+  User User @relation(fields: [userId], references: [id])
 }
 
 model Admin_yonke {
-  id       Int @id @default(autoincrement())
-  admin_id Int
+  id       Int   @id @default(autoincrement())
+  admin_id String
   yonke_id Int
-  admin Admin @relation(fields: [admin_id], references: [id], onDelete: Cascade)
-  yonke Yonke @relation(fields: [yonke_id], references: [id], onDelete: Cascade)
+  admin    User @relation(fields: [admin_id], references: [id], onDelete: Cascade)
+  yonke    Yonke @relation(fields: [yonke_id], references: [id], onDelete: Cascade)
 }
 
 model Yonke {
-  id        Int      @id @default(autoincrement())
-  name      String
-  location  String
-  city      String
-  latitude  String
-  longitude String
+  id           Int           @id @default(autoincrement())
+  name         String
+  location     String
+  city         String
+  latitude     String
+  longitude    String
   admin_yonkes Admin_yonke[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  active    Boolean  @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  active       Boolean       @default(true)
 }
