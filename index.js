@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
+
 import { sendMesssage } from "./services/whatsappService.js";
 
 dotenv.config();
@@ -48,7 +49,6 @@ app.post("/admins", async (req, res) => {
     const newAdmins = await dataBase.admin.createMany({
       data: admins, // `data` debe ser un array de objetos con la estructura de cada admin
     });
-
     res.status(201).json({
       message: "Admins creados exitosamente",
       count: newAdmins.count, // `count` muestra cuántos registros se crearon
@@ -149,7 +149,6 @@ app.post("/yonkes", async (req, res) => {
       city: body.city,
       latitude: body.latitude,
       longitude: body.longitude,
-      admin_id: body.admin_id,
     },
   });
 
