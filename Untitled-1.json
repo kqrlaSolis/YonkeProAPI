@@ -1,0 +1,162 @@
+[
+  {
+    "name": "Yonke Playas de Rosarito Norte",
+    "location": "Playas de Rosarito Norte, Baja California",
+    "city": "Playas de Rosarito",
+    "latitude": "32.3614",
+    "longitude": "-117.0465",
+    "admin_id": 1
+  },
+  {
+    "name": "Yonke Tundra",
+    "location": "Avenida Leyes de Reforma 20, Benito Juárez",
+    "city": "Playas de Rosarito",
+    "latitude": "32.3600",
+    "longitude": "-117.0600",
+    "admin_id": 2
+  },
+  {
+    "name": "Yonke Rosarito",
+    "location": "Blvd. Benito Juárez 101, Zona Centro",
+    "city": "Playas de Rosarito",
+    "latitude": "32.3420",
+    "longitude": "-117.0410",
+    "admin_id": 3
+  },
+  {
+    "name": "Yonke del Valle",
+    "location": "Carretera Libre Tijuana-Mexicali Km 120, Valle de las Palmas",
+    "city": "Tecate",
+    "latitude": "32.5785",
+    "longitude": "-116.6250",
+    "admin_id": 1
+  },
+  {
+    "name": "Yonke La Rumorosa",
+    "location": "Carretera La Rumorosa Km 56, Centro",
+    "city": "Tecate",
+    "latitude": "32.5430",
+    "longitude": "-116.2170",
+    "admin_id": 2
+  },
+  {
+    "name": "Yonke San Quintín",
+    "location": "Carretera Transpeninsular Km 190, Centro",
+    "city": "San Quintín",
+    "latitude": "30.5592",
+    "longitude": "-115.9462",
+    "admin_id": 3
+  },
+  {
+    "name": "Yonke El Pescador",
+    "location": "Zona Centro, San Quintín",
+    "city": "San Quintín",
+    "latitude": "30.5592",
+    "longitude": "-115.9500",
+    "admin_id": 1
+  },
+  {
+    "name": "Yonke El Ranchero",
+    "location": "Carretera Transpeninsular Km 185",
+    "city": "San Quintín",
+    "latitude": "30.5460",
+    "longitude": "-115.9400",
+    "admin_id": 2
+  },
+  {
+    "name": "Yonke California",
+    "location": "Díaz Ordaz 2910, Internacional",
+    "city": "Tijuana",
+    "latitude": "32.4957",
+    "longitude": "-116.9990",
+    "admin_id": 3
+  },
+  {
+    "name": "Yonke Taz",
+    "location": "Gustavo Díaz Ordaz 16540, Los Pinos",
+    "city": "Tijuana",
+    "latitude": "32.4760",
+    "longitude": "-116.9800",
+    "admin_id": 1
+  },
+  {
+    "name": "Briceño Yonke",
+    "location": "Calle Urbalejo 99, Francisco Villa",
+    "city": "Tijuana",
+    "latitude": "32.5140",
+    "longitude": "-117.0382",
+    "admin_id": 2
+  },
+  {
+    "name": "El Cejas Yonke",
+    "location": "Blvd. Manuel J. Clouthier Norte 114, Campestre Murua",
+    "city": "Tijuana",
+    "latitude": "32.4850",
+    "longitude": "-116.9650",
+    "admin_id": 3
+  },
+  {
+    "name": "Autopartes Hemi",
+    "location": "Pedro Loyola 52, Acapulco",
+    "city": "Ensenada",
+    "latitude": "31.8667",
+    "longitude": "-116.6000",
+    "admin_id": 1
+  },
+  {
+    "name": "Yonke del Puerto",
+    "location": "Carretera Ojos Negros Km 5.025 22300, Ojos Negros",
+    "city": "Ensenada",
+    "latitude": "31.8667",
+    "longitude": "-116.6000",
+    "admin_id": 2
+  },
+  {
+    "name": "California Yonke",
+    "location": "Rubelita 1100, Valle Dorado",
+    "city": "Ensenada",
+    "latitude": "31.8667",
+    "longitude": "-116.6000",
+    "admin_id": 3
+  },
+  {
+    "name": "Desmanteladora California",
+    "location": "A Tijuana Km. 2, Zaragoza",
+    "city": "Mexicali",
+    "latitude": "32.6633",
+    "longitude": "-115.4675",
+    "admin_id": 1
+  },
+  {
+    "name": "Yonke Lety's",
+    "location": "A San Luis R.C. Km 19, Ejido Puebla",
+    "city": "Mexicali",
+    "latitude": "32.6633",
+    "longitude": "-115.4675",
+    "admin_id": 2
+  },
+  {
+    "name": "Yonke El Poblado",
+    "location": "Av. Reforma 1025, Zona Centro",
+    "city": "Mexicali",
+    "latitude": "32.6633",
+    "longitude": "-115.4675",
+    "admin_id": 3
+  },
+  {
+    "name": "Auto Partes ReFra - Yonke",
+    "location": "Al Aeropuerto S/N, Pacífico",
+    "city": "Mexicali",
+    "latitude": "32.6633",
+    "longitude": "-115.4675",
+    "admin_id": 1
+  },
+  {
+    "name": "Yonke Río",
+    "location": "Av. Lázaro Cárdenas 5600, Río Nuevo",
+    "city": "Mexicali",
+    "latitude": "32.6500",
+    "longitude": "-115.4520",
+    "admin_id": 2
+  }
+]
