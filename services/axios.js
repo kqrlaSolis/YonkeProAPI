@@ -10,7 +10,8 @@ const axios_instance = axios.create({
   },
 });
 
-export const POST = async (url, data) => {
+
+export const POST = async (url, data) => { //funcion para hacer peticiones POST a la API
   return axios_instance
     .post(url, data)
     .then((res) => res.data)
