@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
-import { sendMesssage } from "./services/whatsappService.js";
+import { sendMessage } from "./services/whatsappService.js";
 import { getUsers, login, register } from "./src/auth.js";
 import { getUserQuestions } from "./src/questions.js";
 dotenv.config();
@@ -42,7 +42,7 @@ app.get("/yonkes/:id", async (req, res) => {
 app.post("/yonkes", async (req, res) => {
   const dataBase = new PrismaClient(); //intancia de la clase PrismaClient
   const body = req.body;
-
+  console.log(body);
   if (!body.admin_id) return res.json({ message: "no hay" });
 
   const newYonke = await dataBase.yonke.create({
@@ -52,11 +52,10 @@ app.post("/yonkes", async (req, res) => {
       city: body.city,
       latitude: body.latitude,
       longitude: body.longitude,
-      admin_id: body.admin_id,
     },
   });
-
-  await dataBase.user.update({
+  console.log({ newYonke });
+  const user = await dataBase.user.update({
     where: {
       id: body.admin_id,
     },
@@ -65,12 +64,17 @@ app.post("/yonkes", async (req, res) => {
     },
   });
 
-  await dataBase.admin_yonke.create({
+  console.log({ user });
+
+  const relation = await dataBase.admin_yonke.create({
     data: {
       admin_id: body.admin_id,
       yonke_id: newYonke.id,
     },
   });
+
+  console.log({ relation });
+
   res.json(newYonke);
 });
 
@@ -162,10 +166,11 @@ app.post("/question", async (req, res) => {
       carBrand,
       carModelYear,
       carEngine,
+      userId,
     } = req.body;
 
     console.log("------------------------", cities, "------------------------");
-
+    console.log("------------------------", userId, "------------------------");
     let admins = [];
     const yonkes = await dataBase.yonke.findMany({
       where: { city: { in: cities } },
@@ -175,7 +180,12 @@ app.post("/question", async (req, res) => {
         },
       },
     });
-
+    console.log({ yonkes });
+    if (yonkes.length === 0) {
+      return res.status(404).json({
+        message: "No se encontraron yonkes en las ciudades seleccionadas",
+      });
+    }
     const response = yonkes.map((yonke) => {
       const yonkemap = {
         name: yonke.name,
@@ -191,26 +201,32 @@ app.post("/question", async (req, res) => {
       };
       return yonkemap;
     });
+    console.log("YONKES ENCONTRADOS", { response });
 
-    const user = await dataBase.user.findUnique({
-      where: { phone: phoneNumber },
-    });
-
-    if (user) {
-      console.log("User already exists");
-      const question = await dataBase.question.create({
-        data: {
-          name,
-          pieceName,
-          cities,
-          carBrand,
-          phoneNumber,
-          carModelYear,
-          carEngine,
-          User: { connect: { id: user.id } },
-        },
+    if (userId) {
+      const user = await dataBase.user.findUnique({
+        where: { id: userId },
       });
-      console.log({ question });
+      if (user) {
+        console.log(
+          "------------------------",
+          user.name,
+          "------------------------"
+        );
+        const question = await dataBase.question.create({
+          data: {
+            name,
+            pieceName,
+            cities,
+            carBrand,
+            phoneNumber,
+            carModelYear,
+            carEngine,
+            User: { connect: { id: user.id } },
+          },
+        });
+        console.log({ question });
+      }
     }
 
     for (const admin of admins) {
@@ -232,7 +248,7 @@ app.post("/question", async (req, res) => {
     Por favor, responde a esta solicitud lo antes posible. ¡Gracias! 🙌
     `;
       console.log({ message });
-      // await sendMessage(admin.phone, message);
+      await sendMessage(admin.phone, message);
     }
 
     res.json(response);

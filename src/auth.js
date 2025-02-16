@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 
 export const register = async (req, res) => {
   const dataBase = new PrismaClient();
@@ -33,11 +32,11 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   const dataBase = new PrismaClient();
-  const body = req.body;
+  const { password, phone } = req.body;
 
   const user = await dataBase.user.findUnique({
     where: {
-      email: body.email,
+      phone: phone,
     },
   });
 
@@ -45,7 +44,7 @@ export const login = async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
 
-  const passwordMatch = await bcrypt.compare(body.password, user.password);
+  const passwordMatch = await bcrypt.compare(password, user.password);
 
   if (!passwordMatch) {
     return res.status(401).json({ message: "Invalid credentials" });
@@ -61,7 +60,7 @@ export const login = async (req, res) => {
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: "1d",
+      expiresIn: "7d",
     }
   );
 
